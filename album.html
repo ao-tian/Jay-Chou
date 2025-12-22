@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jay Chou Album - View all tracks and album information">
+    <title>Album - Jay Chou Fan Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="navigation"></div>
+
+    <div class="album-detail" id="album-content">
+        <div style="text-align: center; padding: 3rem;">
+            <p>Loading album...</p>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <!-- Lyrics Modal -->
+    <div id="lyrics-modal" class="lyrics-modal">
+        <div class="lyrics-modal-content">
+            <span class="lyrics-close">&times;</span>
+            <h2 id="lyrics-song-title" class="lyrics-title"></h2>
+            <div class="lyrics-container">
+                <div class="lyrics-section">
+                    <h3>中文</h3>
+                    <div id="lyrics-cn" class="lyrics-text"></div>
+                </div>
+                <div class="lyrics-section">
+                    <h3>English</h3>
+                    <div id="lyrics-en" class="lyrics-text"></div>
+                </div>
+            </div>
+            <div class="lyrics-note">
+                <p><small>Note: Lyrics are provided for educational/fan purposes. Translations are fan-made and may vary.</small></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Options Modal -->
+    <div id="buy-modal" class="buy-modal">
+        <div class="buy-modal-content">
+            <span class="buy-close">&times;</span>
+            <h2>Where to Purchase</h2>
+            <div class="buy-options-grid">
+                <a href="https://music.apple.com" target="_blank" class="buy-option">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/512px-Apple_Music_icon.svg.png" alt="Apple Music" class="buy-icon" onerror="this.onerror=null; this.src='https://tools.applemediaservices.com/api/badges/listen-on-apple-music/badge/en-US?size=250x83&releaseDate=2022-07-15'">
+                    <h3>Apple Music</h3>
+                    <p>Stream or purchase</p>
+                </a>
+                <a href="https://open.spotify.com" target="_blank" class="buy-option">
+                    <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png" alt="Spotify" class="buy-icon" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1024px-Spotify_logo_without_text.svg.png'">
+                    <h3>Spotify</h3>
+                    <p>Stream on Spotify</p>
+                </a>
+                <a href="https://www.amazon.com/music" target="_blank" class="buy-option">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Amazon_Music_logo.svg/1024px-Amazon_Music_logo.svg.png" alt="Amazon Music" class="buy-icon" onerror="this.onerror=null; this.src='https://images-na.ssl-images-amazon.com/images/G/01/digital/music/images/splash/Amazon-Music-Logo._CB468889866_.png'">
+                    <h3>Amazon Music</h3>
+                    <p>Digital or physical</p>
+                </a>
+                <a href="https://www.youtube.com/music" target="_blank" class="buy-option">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/YouTube_Music_logo.svg/1024px-YouTube_Music_logo.svg.png" alt="YouTube Music" class="buy-icon" onerror="this.onerror=null; this.src='https://www.youtube.com/img/desktop/yt_1200.png'">
+                    <h3>YouTube Music</h3>
+                    <p>Stream or purchase</p>
+                </a>
+                <a href="https://music.163.com" target="_blank" class="buy-option">
+                    <img src="https://s1.music.126.net/style/favicon.ico" alt="NetEase Music" class="buy-icon" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Netease_Cloud_Music_logo.svg/1024px-Netease_Cloud_Music_logo.svg.png'">
+                    <h3>NetEase Music</h3>
+                    <p>Stream in China</p>
+                </a>
+                <a href="https://www.kkbox.com" target="_blank" class="buy-option">
+                    <img src="https://www.kkbox.com/f/images/favicon.ico" alt="KKBOX" class="buy-icon" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/KKBOX_logo.svg/1024px-KKBOX_logo.svg.png'">
+                    <h3>KKBOX</h3>
+                    <p>Asian streaming</p>
+                </a>
+            </div>
+            <div class="buy-note">
+                <p><small>Links provided for convenience. Official JVR Music store may have exclusive releases.</small></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="albums-data.js"></script>
+    <script src="components.js"></script>
+    <script src="lyrics-data.js"></script>
+    <script>
+        // Render navigation and footer
+        document.getElementById('navigation').innerHTML = renderNavigation('album');
+        document.getElementById('footer').innerHTML = renderFooter();
+
+        // Get album ID from URL parameter
+        const albumId = getUrlParameter('id');
+        const album = getAlbumById(albumId);
+
+        // Lyrics Modal Functions
+        const lyricsModal = document.getElementById('lyrics-modal');
+        const lyricsClose = document.querySelector('.lyrics-close');
+        
+        function openLyricsModal(track, albumId) {
+            const lyrics = getLyrics(albumId, track.number);
+            if (!lyrics) {
+                alert(`Lyrics for "${track.en}" are not available yet. Check back soon!`);
+                return;
+            }
+            
+            document.getElementById('lyrics-song-title').textContent = `${track.en} / ${track.cn}`;
+            
+            const cnElement = document.getElementById('lyrics-cn');
+            const enElement = document.getElementById('lyrics-en');
+            
+            cnElement.innerHTML = lyrics.cn.map(line => `<p>${line}</p>`).join('');
+            enElement.innerHTML = lyrics.en.map(line => `<p>${line}</p>`).join('');
+            
+            lyricsModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLyricsModal() {
+            lyricsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        lyricsClose.onclick = closeLyricsModal;
+        window.onclick = function(event) {
+            if (event.target === lyricsModal) {
+                closeLyricsModal();
+            }
+        };
+
+        // Buy Modal Functions
+        const buyModal = document.getElementById('buy-modal');
+        const buyClose = document.querySelector('.buy-close');
+        
+        function openBuyModal() {
+            buyModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeBuyModal() {
+            buyModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        buyClose.onclick = closeBuyModal;
+        window.onclick = function(event) {
+            if (event.target === buyModal) {
+                closeBuyModal();
+            }
+        };
+
+        if (!album) {
+            document.getElementById('album-content').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <h1>Album Not Found</h1>
+                    <p>The album you're looking for doesn't exist.</p>
+                    <a href="JAYCHOUweb.html" class="btn btn-primary" style="display: inline-block; margin-top: 1rem;">Back to Home</a>
+                </div>
+            `;
+        } else {
+            // Update page title and meta description
+            document.title = `${album.title} (${album.year}) - Jay Chou Album | Fan Website`;
+            document.querySelector('meta[name="description"]').content = `Jay Chou's album ${album.title} (${album.year}) - View all tracks and album information`;
+
+            // Render album content
+            const albumHTML = `
+                <div class="album-header">
+                    <div class="album-cover">
+                        <img src="${album.image}" alt="${album.title}">
+                    </div>
+                    <div class="album-info">
+                        <span class="album-year">${album.year}</span>
+                        <h1>${album.title}</h1>
+                        <p>${album.fullTitle}</p>
+                        <p class="price">${album.price} <span style="font-size: 1rem; color: #666;">tax included</span></p>
+                        <button class="buy-btn" id="buy-btn-main">Buy / Stream</button>
+                    </div>
+                </div>
+
+                <div class="tracklist">
+                    <div class="tracklist-header">
+                        <div>Disk ${album.diskNumber}</div>
+                        <div>Track Name</div>
+                        <div>Lyrics</div>
+                    </div>
+                    ${album.tracks.map((track, idx) => {
+                        const hasLyrics = getLyrics(album.id, track.number) !== null;
+                        const trackId = `track-${idx}`;
+                        return `
+                        <div class="track-item ${hasLyrics ? 'track-clickable' : ''}" id="${trackId}" data-track-number="${track.number}" data-album-id="${album.id}" data-track-en="${track.en}" data-track-cn="${track.cn}">
+                            <div class="track-number">${track.number}</div>
+                            <div>
+                                <div class="track-name-en">${track.en}</div>
+                                <div class="track-name-cn">${track.cn}</div>
+                            </div>
+                            <div class="track-lyrics-icon">${hasLyrics ? '📜' : ''}</div>
+                        </div>
+                    `}).join('')}
+                </div>
+            `;
+
+            document.getElementById('album-content').innerHTML = albumHTML;
+            
+            // Add click listeners to tracks with lyrics
+            document.querySelectorAll('.track-clickable').forEach(item => {
+                item.addEventListener('click', function() {
+                    const trackNumber = parseInt(this.getAttribute('data-track-number'));
+                    const albumId = parseInt(this.getAttribute('data-album-id'));
+                    const track = {
+                        number: trackNumber,
+                        en: this.getAttribute('data-track-en'),
+                        cn: this.getAttribute('data-track-cn')
+                    };
+                    openLyricsModal(track, albumId);
+                });
+            });
+            
+            // Add click listener to buy button
+            const buyBtn = document.getElementById('buy-btn-main');
+            if (buyBtn) {
+                buyBtn.addEventListener('click', openBuyModal);
+            }
+        }
+    </script>
+</body>
+</html>
+
