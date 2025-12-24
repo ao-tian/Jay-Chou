@@ -1,5 +1,7 @@
 # 🎵 Jay Chou Fan Website (2000–2022)
 
+![Website Demo](work_demo.png)
+
 This is a modern, interactive tribute site dedicated to the legendary Taiwanese singer-songwriter **Jay Chou**. The website showcases his complete discography, career highlights, and provides an immersive fan experience with dynamic content rendering and modern UI design.
 
 ---
